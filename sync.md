@@ -26,6 +26,7 @@ The grouped sync targets are available for local convenience, but CI syncs each 
 - `bun models:sync github-copilot` syncs only GitHub Copilot pricing.
 - `bun models:sync tinfoil` syncs only Tinfoil.
 - `bun models:sync nearai` syncs only NEAR AI Cloud.
+- `bun models:sync munito` syncs only Munito.
 - `bun models:sync aggregators --dry-run` prints changes without writing model files.
 - `bun models:sync aggregators --new-only` creates new model files but skips updates and removals.
 - `bun models:sync <provider> --open-issues` opens GitHub issues for missing models (on by default only when `GITHUB_ACTIONS=true`).
@@ -433,6 +434,23 @@ engy is implemented in `packages/core/src/sync/providers/engy.ts`.
   - Point `base_model` at the lab entry for the exact id, adding it under `models/` if it is missing. Pointing at a sibling is not a substitute: because an authored `base_model` wins, the sync never corrects it later.
 - Per-token USD string prices become per-1M, rounded to six decimals; two would carry float error otherwise.
 - Modalities are sorted into catalogue order; wire order is arbitrary.
+
+## Munito Notes
+
+Munito is implemented in `packages/core/src/sync/providers/munito.ts`.
+
+- Run it with `bun models:sync munito`.
+- Source endpoint: `https://api.munito.ai/inference/v1/models/openrouter`, Munito's listing in OpenRouter's provider format. It needs no auth.
+- The feed has one row for each model, region and service tier. The sync keeps the standard-tier rows of the global host: `deployment_region = "global"`, no `service_tier`, and no `@eu` or `@us` suffix on the ID.
+- The feed owns `cost` (input, output and cache read), `limit.context`, `limit.output`, `modalities`, `attachment`, `tool_call`, `structured_output`, `temperature`, `reasoning` and `reasoning_options`. The sync writes only the values that differ from the lab file.
+- `reasoning_options` come from the `reasoning_effort` values and from an `enable_thinking` or `thinking` boolean in `chat_template_kwargs`. When the effort values include `none`, the switch is not a separate toggle. GLM's `clear_thinking` is not a toggle.
+- A reasoning model with no control in the feed, or with an effort value that the schema does not know, keeps its file and gets a `[missing-model]` issue.
+- `interleaved` and `status` stay as authored. A new reasoning model gets `interleaved.field = "reasoning_content"`, because Munito passes that field of an earlier assistant message to the chat template.
+- Wire IDs are Hugging Face slugs. `deepseek-ai` and `perplexity-ai` map to the `deepseek` and `perplexity` lab directories, and `mistralai/mistral-small-4-119b-2603` maps to `mistral/mistral-small-2603`. An authored `base_model` wins.
+- A model with no lab file is not created inline. It gets a `[missing-model]` issue.
+- `deleteMissing` is on, because the feed lists every model that the host sells. A feed with no global standard-tier row stops the run, so a truncated response cannot delete every file.
+- `authoritativeHeaders` is on: the leading comment names the feed and the wire path of each reasoning control.
+- Per-token USD string prices become per-1M, rounded to six decimals.
 
 ## Standalone Generators
 

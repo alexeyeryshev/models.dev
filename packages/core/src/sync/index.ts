@@ -42,6 +42,7 @@ import { llmgateway, llmgatewayProviders } from "./providers/llmgateway.js";
 import { mergeGateway } from "./providers/merge-gateway.js";
 import { meta } from "./providers/meta.js";
 import { mistral } from "./providers/mistral.js";
+import { munito } from "./providers/munito.js";
 import { nanoGpt } from "./providers/nano-gpt.js";
 import { nearai } from "./providers/nearai.js";
 import { novitaAi } from "./providers/novita-ai.js";
@@ -183,6 +184,7 @@ export const providers: {
   "merge-gateway": SyncProvider<any>;
   meta: SyncProvider<any>;
   mistral: SyncProvider<any>;
+  munito: SyncProvider<any>;
   "nano-gpt": SyncProvider<any>;
   nearai: SyncProvider<any>;
   "novita-ai": SyncProvider<any>;
@@ -228,6 +230,7 @@ export const providers: {
   "merge-gateway": mergeGateway,
   meta,
   mistral,
+  munito,
   "nano-gpt": nanoGpt,
   nearai,
   "novita-ai": novitaAi,
@@ -267,7 +270,7 @@ export const groups = {
     "vercel",
   ],
   cloudflare: ["cloudflare-ai-gateway", "cloudflare-workers-ai"],
-  direct: ["aiand", "ambient", "anthropic", "baseten", "chutes", "cortecs", "deepinfra", "digitalocean", "engy", "fireworks-ai", "friendli", "github-copilot", "google", "hyper", "meta", "mistral", "nearai", "ollama-cloud", "openai", "ovhcloud", "pioneer", "tinfoil", "venice", "wandb", "xai"],
+  direct: ["aiand", "ambient", "anthropic", "baseten", "chutes", "cortecs", "deepinfra", "digitalocean", "engy", "fireworks-ai", "friendli", "github-copilot", "google", "hyper", "meta", "mistral", "munito", "nearai", "ollama-cloud", "openai", "ovhcloud", "pioneer", "tinfoil", "venice", "wandb", "xai"],
 } as const;
 
 type ProviderID = keyof typeof providers;

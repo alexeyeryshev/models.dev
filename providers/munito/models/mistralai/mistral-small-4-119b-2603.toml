@@ -1,0 +1,24 @@
+# Source: https://api.munito.ai/inference/v1/models/openrouter (public), standard tier on the global host.
+# Effort: reasoning_effort = none|high (none disables reasoning, so there is no separate toggle)
+base_model = "mistral/mistral-small-2603"
+attachment = false
+structured_output = true
+
+[interleaved]
+field = "reasoning_content"
+
+[[reasoning_options]]
+type = "effort"
+values = ["none", "high"]
+
+[cost]
+input = 0.14
+output = 0.6
+cache_read = 0.014
+
+[limit]
+context = 262_144
+output = 235_929
+
+[modalities]
+input = ["text"]
